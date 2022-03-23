@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+
+multiDownlist=$(mktemp -uq)
+trap 'sudo rm -f $multiDownlist /tmp/total.tmp >/dev/null 2>&1' EXIT INT TERM HUP QUIT  >/dev/null 2>&1
+
+cat <<EOF >$multiDownlist
+################################################################################################################################
+#                                      ~   M U L T I  P A C K A G E  D O W N L O A D   ~                                       #
+################################################################################################################################
+                                                                                                                             
+## If you wish to clone from a personal GitHub or GitLab repository,                                                        
+## please enter your own GitHub and/or GitLab username below:
+
+# GitHub & GitLab Usernames :
+
+hubname=""
+labname=""
+
+
+## Please select a color scheme to go alongside your the green package names.
+## Your options are as follows: -->  ( blue, green, red, yellow, white, pink or random )               
+
+color1="blue"
+color2="pink"
+color3="yellow"
+
+
+##  PLEASE ENTER YOUR DESIRED SOURCES AND PACKAGES BELOW :
+
+packages=(
+
+
+
+ )
+
+
+
+# See /usr/share/doc/pkgdl/README for more information on list formatting.
+
+################################################################################################################################
+################################################################################################################################
+EOF
+
+editor(){ \
+[ -n  $EDITOR ] && return 0 || [ -z $EDITOR ] &&
+! sudo pacman -Qq neovim &>/dev/null && sudo pacman -S neovim ; 
+sudo pacman -Qq neovim &>/dev/null && EDITOR=nvim || EDITOR=nano
+} ; editor
+
+$EDITOR $multiDownlist && source $multiDownlist
+
+name="$(echo "$USER")"
+
+[ -n $(echo $color1) ] || [ ! $color1 ] && color=blue
+[ -n $(echo $color2) ] || [ ! $color2 ] && color=pink
+[ -n $(echo $color3) ] || [ ! $color3 ] && color=yellow
+
+
+yellow(){ echo -n  "$(tput bold; tput setaf 3)${*}$(tput sgr0)" ; }
+
+blue()  { echo -n  "$(tput bold; tput setaf 6)${*}$(tput sgr0)" ; }
+
+white() { echo -n  "$(tput bold; tput setaf 7)${*}$(tput sgr0)" ; }
+
+pink()  { echo -n  "$(tput bold; tput setaf 5)${*}$(tput sgr0)" ; }
+
+red()   { echo -en  "$(tput bold; tput setaf 1)${*}$(tput sgr0)" ; }
+
+green() { echo -n  "$(tput bold; tput setaf 2)${*}$(tput sgr0)" ; }
+
+msg()   { echo -e  "$(tput bold; tput setaf 2)${*}$(tput sgr0)" ; }
+
+random(){ echo -n  "$(tput bold; tput setaf "$(seq 25|shuf|head -1)") ${*}$(tput sgr0)" ; }
+
+err()   { echo >&2 "$(tput bold; tput setaf 1)[-] ERROR: ${*}$(tput sgr0)" && exit 1337 ; }
+
+
+npminstall() { sudo -u "$name" npm install --save "$1" "$npmd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+scrstart()   { clear ; echo -e "\n\n" ; green "    Downloading Packages : " ; echo  -e "\n\n" || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+snpinstall() { sudo -u "$name" snap install "$1" "$snpd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+pkginstall() { paru -S --needed --noconfirm "$1" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+pipinstall() { sudo -u "$name" python3 -m pip install "$1" "$pipd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+
+labclone()   { git clone https://gitlab.com/"$1".git \
+    "$labd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+mylabclone() { git clone https://gitlab.com/"$labname"/"$(basename $1)".git \
+    "$gitd"/"$(basename $pkg)" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+myhubclone() { git clone https://github.com/"$hubname"/"$(basename $1)".git \
+    "$gitd"/"$(basename $pkg)" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+hubclone()   { git clone https://github.com/"$1".git \
+    "$hubd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+
+
+
+! [ -d $HOME/PKGDownloads ] && mkdir $HOME/PKGDownloads >/dev/null 2>&1 ;
+! [ -d $HOME/PKGDownloads/NPM ] && mkdir $HOME/PKGDownloads/NPM >/dev/null 2>&1 ;
+! [ -d $HOME/PKGDownloads/PIP ] && mkdir $HOME/PKGDownloads/PIP >/dev/null 2>&1 ;
+! [ -d $HOME/PKGDownloads/GitHub ] && mkdir $HOME/PKGDownloads/GitHub >/dev/null 2>&1 ;
+! [ -d $HOME/PKGDownloads/GitLab ] && mkdir $HOME/PKGDownloads/GitLab >/dev/null 2>&1 ;
+! [ -d $HOME/PKGDownloads/Snaps ] && mkdir $HOME/PKGDownloads/Snaps >/dev/null 2>&1 ;
+! [ -d $HOME/PKGDownloads/MyGitRepos ] && mkdir $HOME/PKGDownloads/MyGitRepos ;
+
+pkgd="$HOME/PKGDownloads"        ;  labd="$HOME/PKGDownloads/GitLab"     
+pipd="$HOME/PKGDownloads/PIP"    ;  hubd="$HOME/PKGDownloads/GitHub"          
+snpd="$HOME/PKGDownloads/Snaps"  ;  gitd="$HOME/PKGDownloads/MyGitRepos"   
+npmd="$HOME/PKGDownloads/NPM"    ;
+
+[ -f /tmp/total.tmp ] && rm /tmp/total.tmp
+
+for x in  "${packages[@]}" ; do  
+    echo $x >> /tmp/total.tmp ; sed -i '/^\s/d;/^#/d' /tmp/total.tmp ; 
+done
+
+for d in "/tmp/total.tmp" ; do  
+    src="$(cat $d|cut -d',' -f3 -s)" 
+    pkg="$(cat $d |cut -d',' -f1)"   
+    desc="$(cat $d|cut -d',' -f2)"   
+
+done ; scrstart
+
+while IFS=, read -r pkg desc src; do
+    ((n=$n+1));total=$(wc -l < /tmp/total.tmp) ; 
+    $color1 "( $n of $total ) " ; $color2 $pkg && 
+    [ -n "$(echo "$desc")" ] && green " - " && 
+    $color3 "$desc" ; echo ""
+    
+case "$src" in
+    "L") labclone "$pkg" ;; "ML") mylabclone "$pkg" ;; "S") snpinstall "$pkg" ;; "N") npminstall "$pkg" ;;
+    "H") hubclone "$pkg" ;; "MH") myhubclone "$pkg" ;;  "") pkginstall "$pkg" ;; "P") pipinstall "$pkg" ;; 
+      *) echo -e "\n" && err ""$src" is  not a valid option for a source. - skipping: "$src" ..." &&  echo -e "\n"
+
+    sleep 2 ;; esac ; done < /tmp/total.tmp
+
+msg "\n\n\n[+] All Packages Suckessfully Downloaded and installed!\n" && sleep 1 ; exit 0 || exit 1
+
+##############################################################################################################################
+##############################################################################################################################
+

@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+ 
+tstd="$HOME/.local/testing" ; 
+[ -z $3 ] && newname="$(basename $2)" || newname="$(basename $3)"
+
+yellow(){ echo -en "$(tput bold; tput setaf 3)${*}$(tput sgr0)"; }
+blue(){ echo -en "$(tput bold; tput setaf 6)${*}$(tput sgr0)"; }
+green(){ echo -en "$(tput bold; tput setaf 2)${*}$(tput sgr0)"; }
+pink(){ echo -en "$(tput bold; tput setaf 5)${*}$(tput sgr0)"; }
+red(){ echo -e "$(tput bold; tput setaf 1)${*}$(tput sgr0)"; }
+
+! [ -e $tstd ] && mkdir -p $tstd
+! sudo pacman -Qq lf >/dev/null && ! sudo pacman -S lf-git && ! sudo pacman -S lf && ! yay -S lf-git && ! paru -S lf-git && ! yaourt -S lf-git && ! pikaur -S lf-git && 
+  red " A valid AUR helper is not installed/available and lf cannot be downloaded. Therefore the '-l' flag will not be functional.\n"
+
+! sudo pacman -Qq exa >/dev/null && ! sudo pacman -S exa && ! yay -S exa && ! paru -S exa && ! yaourt -S exa && ! pikaur -S exa
+
+[ -z $EDITOR ] && pacman -Qq neovim >/dev/null && export EDITOR="nvim"
+[ -z $EDITOR ] && pacman -Qq vim >/dev/null && export EDITOR="vim"
+[ -z $EDITOR ] && EDITOR=nano
+
+lfcd(){ tmp="$(mktemp)" 
+	lf -last-dir-path="$tmp" "$@"
+	[ -f "$tmp" ] && dir="$(cat "$tmp")" 
+	sudo rm -d -r -v -f "$tmp"  >/dev/null 2>&1
+	[ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+}
+
+usage(){ clear ; echo "" ; green "  Usage:" ; pink " $(basename $0) " ;yellow "[OPTION] [DIR/FILE] [NEWNAME]";blue "
+              
+  If"; yellow " [NEWNAME]";blue " is left blank, the script will use the";yellow " [DIR/FILE] ";blue "as the new name.
+  If"; yellow " [DIR/FILE]";blue " is left blank, the script will cd to the ~/.local/testing directory, and lists its contents.
+
+
+"; green  "  Flags:"; yellow "
+           : ";blue "dry run, open testing directory in lf file manager, in 'lfcd' mode.\n" ;
+   pink "     -h    ";yellow ": ";blue "print this help message.\n" ;
+   pink "     -l    ";yellow ": ";blue "list files in tesdting directory.\n" ; 
+   pink "     -t    ";yellow ": ";blue "create file in testing directory.\n" ;
+   pink "     -r    ";yellow ": ";blue "remove file/directory in testing directory.\n" ;
+   pink "     -e    ";yellow ": ";blue "create a new or edit exisiting file in testing directory.\n" ;
+   pink "     -c    ";yellow ": ";blue "copy file to testing directory and begin editing.\n" ;
+   pink "     -m    ";yellow ": ";blue "move file to testing directory and begin editing.\n" ;
+   pink "     -s    ";yellow ": ";blue "create a new or edit exisiting shell (bash) script in testing directory.\n" ;
+   pink "     -p    ";yellow ": ";blue "create a new or edit exisiting python script in testing directory.\n" ;
+   pink "     -gc   ";yellow ": ";blue "clone a git repo into the testing directory (provided you have the 'cgc' script) \"https://gitlab.com/qyp/betterbin/-/raw/master/gc\" .\n" ;
+   pink "     -md   ";yellow ": ";blue "create directory in testing directory.\n" ;
+   pink "     -co   ";yellow ": ";blue "just copy file to testing directory.\n" ;
+   pink "     -mo   ";yellow ": ";blue "just move file to testing directory.\n" ;
+   pink "     -cb   ";yellow ": ";blue "copy file from ~/.local/bin to testing directory and begin editing.\n" ;
+   pink "     -mb   ";yellow ": ";blue "move file from ~/.local/bin to testing directory and begin editing.\n" ; 
+   pink "     -mbo  ";yellow ": ";blue "just move file  from ~/.local/bin to testing directory.\n" ;
+   pink "     -cbo  ";yellow ": ";blue "just copy file from ~/.local/bin to testing directory.\n" ;
+
+echo -e "\n" ; exit 0 ; }
+
+case $1 in
+  ''-l|l|ls|-ls) cd $tstd; ! exa && ls -a ;;
+  -md|md|mkd|mkdir|-mkd) mkdir $tstd/$2 ;;
+  -t|t|f) touch $tstd/$2 ;;
+  -r|r|rm) rm -rf $tstd/$2 ;;
+  -h|h|help) usage ;;
+  -co|co|cpo) cp $2 $tstd/$newname ;;
+  -m|mv|m) mv $2 $tstd/$newname && $EDITOR $tstd/$newname ;;
+  -v|-e|-n|e|n|v|nv|vn|en|ne) $EDITOR $tstd/$2 ;;
+  -s|-b|s|b|sh|bin) ! [ -f $tstd/$newname ] && echo '#!/usr/bin/env bash' > $tstd/$2 && 
+    chmod +x $tstd/$newname ; $EDITOR $tstd/$newname ;;
+  -p|p|py) ! [ -f $tstd/$2 ] &&  echo '#!/usr/bin/env python3' > $tstd/$2 && 
+    chmod +x $tstd/$2 ; $EDITOR $tstd/$2 ;;
+  -gc|gc|cgc|cgc|gc) ! [ -f $
+  -c|cp|ce|-cp|c) cp $2 $tstd/$newname && $EDITOR $tstd/$newname ;;
+  -mo|mo|mvo) mv $2 $tstd/$newname ;;
+  -cbo|cbo|cpbo|cpbin) cp $HOME/.local/bin/$2 $tstd/$newname ;;
+  -mbo|mo|mvbo|mvbin) mv $HOME/.local/bin/$2 $tstd/$newname ;;
+  -cb|cb|cpb) cp $HOME/.local/bin/$2 $tstd/$newname && $EDITOR $tstd/$newname ;;
+  -mb|mb|mvb) mv $HOME/.local/bin/$2 $tstd/$newname && $EDITOR $tstd/$newname ;;
+  *) cd $tstd && lfcd ;;
+esac

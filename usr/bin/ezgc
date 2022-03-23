@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+                                                                         # --------------------------------- #
+                                                                        # #   E A S Y   G I T   C L O N E   # #
+                                                                         # --------------------------------- #
+
+# A simple script to save you time when cloning repos from
+# github, gitlab or the AUR.
+
+
+msg(){ echo "$(tput bold; tput setaf 2)[+] ${*}$(tput sgr0)"; }
+err(){ echo >&2 "$(tput bold; tput setaf 1)[-] ERROR!$(tput sgr0)" && exit 1337; }
+yellow(){ echo -en "$(tput bold; tput setaf 3)${*}$(tput sgr0)"; }
+blue(){ echo -en "$(tput bold; tput setaf 6)${*}$(tput sgr0)"; }
+green(){ echo -en "$(tput bold; tput setaf 2)${*}$(tput sgr0)"; }
+pink(){ echo -en "$(tput bold; tput setaf 5)${*}$(tput sgr0)"; }
+red(){ echo -e "$(tput bold; tput setaf 1)${*}$(tput sgr0)"; }
+
+gca(){ \
+[ -z $1 ] && read -p "  Enter repo name :  " repo || repo=$1
+echo -e "\n" && git clone https://aur.archlinux.org/"$1".git &&
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+
+gch(){ \
+[ -z $1 ] && read -p "  Enter 'creator/repo' names :  " repo || repo=$1
+echo -e "\n" && git clone https://github.com/"$repo".git && 
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+
+gcl(){ \
+[ -z $1 ] && read -p "  Enter 'creator/repo' names :  " repo || repo=$1
+echo -e "\n" && git clone https://gitlab.com/"$repo".git &&
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+
+gcp(){ \
+[ -z $1 ] && read -p "  Enter nepo name :  " repo || repo=$1
+echo -e "\n" && git clone https://"$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/Nu1LL1nuX/conf/easyCloneUrl")"/"$repo".git &&  
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+
+firstPersonal(){ \
+   blue "     Please enter the" ; yellow " full URL"; blue " to your personal git account";yellow " ("; green "NOTE:"; blue " this setting can be"; pink " changed"; blue " later with the"; pink " '" ; yellow "--default"; pink "'";blue " option."; yellow ") \n\n"; green "     :  " ; read  personal ;
+     mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/Nu1LL1nuX/conf" >/dev/null 2>&1 ; echo $personal|sed 's/http:\/\///g;s/https:\/\///g;s/.git//g' >"${XDG_DATA_HOME:-$HOME/.local/share}/Nu1LL1nuX/conf/easyCloneUrl"; }
+
+
+  usage(){ clear ; echo "" ; green "  Usage:" ; pink " "$(basename $0)" " ;yellow "[option] [creator name]";blue "/"; yellow "[repo name] [destination";blue "(optional)";yellow "]";blue "\n
+  If"; yellow " [option]";blue " is left blank, the script will assume you are writing out the full link, excluding the head 'https://', and tail '.git'.\n" ; 
+   green  "\n\n  Options";blue "/"; green "Flags:\n\n";
+   pink "               ";yellow ": ";blue "dry run, prints help menu if no arguments are given.\n" ;
+   pink "     -a        ";yellow ": ";blue "clone from AUR.\n" ;
+   pink "     -h        ";yellow ": ";blue "clone from github.\n" ;
+   pink "     -l        ";yellow ": ";blue "clone from gitlab.\n" ;
+   pink "     -p        ";yellow ": ";blue "clone from personal git account, format: "$(basename $0)" -p [repo name].\n" ;
+   pink "     -d        ";yellow ": ";blue "clone into $HOME/gitClones, format: "$(basename $0)" -d [option] [creator name]/[repo name]\n" ;
+   pink "    --help     ";yellow ": ";blue "show this help message.\n" ;
+   pink "    --default  ";yellow ": ";blue "reset your default personal git profile URL.\n" ;
+echo -e "\n" ; exit 0 ; }
+
+clear ; echo -e "\n"  
+dryRun=$(mktemp -qu)
+
+case $1 in
+  -a|a) gca $2 ;;
+  -l|l) gcl $2 ;;
+  -h|h) gch $2 ;;
+  -d|d|dir|-dir) mkdir $HOME/gitClones >/dev/null 2>&1 ; cd $HOME/gitClones && $0 $2 $3 $HOME/gitClones/$3 ;;
+  -p|p) ! [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/Nu1LL1nuX/conf/easyCloneUrl" ] && firstPersonal ; gcp $2 ;;
+  --default) firstPersonal ;;
+  --help|-help|help|--help) usage ;;
+  *) [ -z "$1" ] && usage ||echo "$1"|sed 's/http:\/\///g;s/https:\/\///g;//g'>$dryRun && git clone https://"$(cat $dryRun)" || git clone http://"$(cat $dryRun)".git ;;
+esac

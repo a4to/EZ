@@ -1,0 +1,89 @@
+                    
+                           # --------------------------------------------------------------- #
+                          # #        ~  M U L T I  P A C K A G E  D O W N L O A D  ~        # #
+                           # --------------------------------------------------------------- #
+                               
+                                  #---------------------------------------------------#
+                                 # This script is a TEMPLATE to DownLoad packages from #
+                                 # various sources, and cannot be used as is.Your user #
+                                 # input is required in order for the script to run as #
+                                 # intended and to produce your desired results.       #
+                                  #---------------------------------------------------#
+
+
+#               This script is intended to help users download various packages froma multitude of different 
+#              sources quickly and easily without having to remember the various different of downloading them.
+
+#                Simply follow the instructions below, and enter the required information needed for the 
+#                     script detect the correct sources to download your range of packages from.
+
+
+#                                    Hope you find this script helpful!   -  dqYpb
+
+
+
+################################################################################################################################
+##   Please keep in mind, that ensuring you format your list correctly ia essentail in order for the script run correctly.    ##
+################################################################################################################################
+
+
+#             Do not enter any spaces between the beginning of the line, to the end each line, before 
+#            ensuring you enclos it in either single or double quotes. However, you may leave new lines 
+#            in between each package, or make comments by starting a line with a #. Just make sure that 
+#            every entry is enclosed either single, or double quotes, and that all sources, and packages 
+#             are seperated by a comma with no spaces. 
+
+
+#             Packages to be installed with pacman or from the AUR should simply start with the 
+#            apostrophe, followed by the name of the package, and closed off with anoter apostrophe. 
+#            Packages from other sources should start with their respective letter, followed by a 
+#             comma and the name of the package. 
+
+
+
+                   #-------------------------------------------------------------------------------# 
+                  # # The following list is provided below as an example for reference purposes : # #
+                   #-------------------------------------------------------------------------------# 
+
+
+#                    Local or AUR Packages :            'packageName,"Comment here (optional)"'    # This is most likely to be the most commonly used format.
+
+
+#                     GitHub Repositories  :            'H,Creator/HubRepoName,"Comment here (optional)"'
+
+#                     GitLab Repositories  :            'L,Creator/LabRepoName,"Comment here (optional)"'
+
+#                         Personal GitHub  :            'PH,yourGitHubRepoName,"Comment here (optional)"'
+
+#                         Personal GitLab  :            'PL,yourGitLabRepoName,"Comment here (optional)"'
+
+
+#                           Snap Packages  :            'S,snapPackageName,"Comment here (optional)"'
+
+#                     Python Pip Packages  :            'P,pythonPackageName,"Comment here (optional)"'
+
+#                  NPM or Nodejs Packages  :            'N,packageName,"Comment here (optional)"'
+
+
+##############################################################################################################################
+##############################################################################################################################
+
+
+
+## THE FOLLOWING HAS BEEN PROVIDED AS A REFERENCE/EXAMPLE FOR THE USER INPUT FOR THE SCRIPT : 
+
+
+ packages=(
+
+'zsh,"A very advanced and programmable command interpreter (shell) for UNIX"'
+'H,neovim/neovim'
+'P,pipenv,"A comment is not necessary and purely meant as eye candy if saving the script for later use"'
+'L,qyp/nu1ll1nux'
+'S,snap-store'
+'N,lite-server'
+
+ )
+
+
+##############################################################################################################################
+##############################################################################################################################
