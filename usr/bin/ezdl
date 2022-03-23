@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+                                                            # --------------------------------------------------------- #
+                                                           # #      ~  E A S Y  P A C K A G E  D O W N L O A D  ~      # #
+                                                            # --------------------------------------------------------- #
+
 
 multiDownlist=$(mktemp -uq)
 trap 'sudo rm -f $multiDownlist /tmp/total.tmp >/dev/null 2>&1' EXIT INT TERM HUP QUIT  >/dev/null 2>&1

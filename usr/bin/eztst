@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
- 
+                                                                # ------------------------------------------------ #
+                                                               # #         ~   E A S Y  T E S T I N G   ~         # #
+                                                                # ------------------------------------------------ #
+
+
 tstd="$HOME/.local/testing" ; 
 [ -z $3 ] && newname="$(basename $2)" || newname="$(basename $3)"
 
