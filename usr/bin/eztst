@@ -4,7 +4,7 @@
                                                                 # ------------------------------------------------ #
 
 
-tstd="$HOME/.local/testing" ; 
+tstd="$HOME/.local/EZtesting" ; 
 [ -z $3 ] && newname="$(basename $2)" || newname="$(basename $3)"
 
 yellow(){ echo -en "$(tput bold; tput setaf 3)${*}$(tput sgr0)"; }
