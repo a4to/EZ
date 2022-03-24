@@ -71,7 +71,8 @@ case $1 in
     chmod +x $tstd/$newname ; $EDITOR $tstd/$newname ;;
   -p|p|py) ! [ -f $tstd/$2 ] &&  echo '#!/usr/bin/env python3' > $tstd/$2 && 
     chmod +x $tstd/$2 ; $EDITOR $tstd/$2 ;;
-  -gc|gc|cgc|cgc|gc) ! [ -f $
+  -gc|gc|cgc|cgc|gc) ! [ -f /bin/ezgc ] && red "\n[-] ERROR: The ezgc package is required to use the '-gc' flag.\n" && exit 1 ;
+    cd $tstd; ezgc $2 $3 $4 $5 $6 $7 $8 $9 ;;
   -c|cp|ce|-cp|c) cp $2 $tstd/$newname && $EDITOR $tstd/$newname ;;
   -mo|mo|mvo) mv $2 $tstd/$newname ;;
   -cbo|cbo|cpbo|cpbin) cp $HOME/.local/bin/$2 $tstd/$newname ;;
