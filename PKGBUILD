@@ -18,10 +18,11 @@ optdepends=(
   'paru: To use 'ezdl' for downloading packages from the AUR'
   )
 provides=(ezdl ezgc eztst)
-source=("https://gitlab.com/qYp/concise/-/raw/master/x86_64/${pkgname}-${pkgver}-${pkgrel}-$arch.pkg.tar.zst")
-sha256sums=('661be8bd668269367de818ba01efc6fc8baa4c202a329925aa409f5082ed3b9f')
+source=("git+$url.git")
+sha256sums=('SKIP')
 
 package() {
+  cd "${_pkgname}"
   install -Dm775 usr/bin/* -g wheel -o ${USER} -t "${pkgdir}/usr/bin/"
   install -Dm644 usr/share/licenses/${pkgname}/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
   install -Dm644 usr/share/doc/${pkgname}/* -t "${pkgdir}/usr/share/doc/${pkgname}/"
