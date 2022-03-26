@@ -21,14 +21,6 @@ hubname=""
 labname=""
 
 
-## Please select a color scheme to go alongside your the green package names.
-## Your options are as follows: -->  ( blue, green, red, yellow, white, pink or random )               
-
-color1="blue"
-color2="pink"
-color3="yellow"
-
-
 ##  PLEASE ENTER YOUR DESIRED SOURCES AND PACKAGES BELOW :
 
 packages=(
@@ -37,6 +29,14 @@ packages=(
 
  )
 
+
+
+## Optionally, you can change the color scheme to your prefrence below.
+# Your options are as follows: -->  ( blue, green, red, yellow, white, pink or random )               
+
+color1="blue"
+color2="pink"
+color3="yellow"
 
 
 # See /usr/share/doc/pkgdl/README for more information on list formatting.
