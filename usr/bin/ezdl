@@ -9,18 +9,9 @@ trap 'sudo rm -f $multiDownlist /tmp/total.tmp >/dev/null 2>&1' EXIT INT TERM HU
 
 cat <<EOF >$multiDownlist
 ################################################################################################################################
-#                                      ~   M U L T I  P A C K A G E  D O W N L O A D   ~                                       #
+#                                       ~   E Z  P A C K A G E  D O W N L O A D E R   ~                                        #
 ################################################################################################################################
                                                                                                                              
-## If you wish to clone from a personal GitHub or GitLab repository,                                                        
-## please enter your own GitHub and/or GitLab username below:
-
-# GitHub & GitLab Usernames :
-
-hubname=""
-labname=""
-
-
 ##  PLEASE ENTER YOUR DESIRED SOURCES AND PACKAGES BELOW :
 
 packages=(
@@ -28,6 +19,16 @@ packages=(
 
 
  )
+
+
+
+## If you wish to clone from a personal GitHub or GitLab repository,                                                        
+## please enter your own GitHub and/or GitLab username below:
+
+# GitHub & GitLab Usernames :
+
+hubname=""
+labname=""
 
 
 
@@ -45,18 +46,20 @@ color3="yellow"
 ################################################################################################################################
 EOF
 
-editor(){ \
 [ -n  $EDITOR ] && return 0 || [ -z $EDITOR ] &&
 ! sudo pacman -Qq neovim &>/dev/null && sudo pacman -S neovim ; 
 sudo pacman -Qq neovim &>/dev/null && EDITOR=nvim || EDITOR=nano
-} ; editor
+
 
 $EDITOR $multiDownlist && source $multiDownlist
 
 name="$(echo "$USER")"
 
+
 [ -n $(echo $color1) ] || [ ! $color1 ] && color=blue
+
 [ -n $(echo $color2) ] || [ ! $color2 ] && color=pink
+
 [ -n $(echo $color3) ] || [ ! $color3 ] && color=yellow
 
 
@@ -79,15 +82,20 @@ random(){ echo -n  "$(tput bold; tput setaf "$(seq 25|shuf|head -1)") ${*}$(tput
 err()   { echo >&2 "$(tput bold; tput setaf 1)[-] ERROR: ${*}$(tput sgr0)" && exit 1337 ; }
 
 
-npminstall() { sudo -u "$name" npm install --save "$1" "$npmd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+npminstall() { sudo -u "$name" npm install --save "$1" "$npmd"/"$pkg" >/dev/null 2>&1 || 
+  red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-scrstart()   { clear ; echo -e "\n\n" ; green "    Downloading Packages : " ; echo  -e "\n\n" || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+scrstart()   { clear ; echo -e "\n\n" ; green "    Downloading Packages : " ; echo  -e "\n\n" || 
+  red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-snpinstall() { sudo -u "$name" snap install "$1" "$snpd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+snpinstall() { sudo -u "$name" snap install "$1" "$snpd"/"$pkg" >/dev/null 2>&1 || 
+  red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-pkginstall() { paru -S --needed --noconfirm "$1" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+pkginstall() { paru -S --needed --noconfirm "$1" >/dev/null 2>&1 || 
+  red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-pipinstall() { sudo -u "$name" python3 -m pip install "$1" "$pipd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+pipinstall() { sudo -u "$name" python3 -m pip install "$1" "$pipd"/"$pkg" >/dev/null 2>&1 || 
+  red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
 
 labclone()   { git clone https://gitlab.com/"$1".git \
@@ -103,47 +111,57 @@ hubclone()   { git clone https://github.com/"$1".git \
     "$hubd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
 
+! [ -d $HOME/PKGDownloads ] && mkdir $HOME/PKGDownloads >/dev/null 2>&1
 
-! [ -d $HOME/PKGDownloads ] && mkdir $HOME/PKGDownloads >/dev/null 2>&1 ;
-! [ -d $HOME/PKGDownloads/NPM ] && mkdir $HOME/PKGDownloads/NPM >/dev/null 2>&1 ;
-! [ -d $HOME/PKGDownloads/PIP ] && mkdir $HOME/PKGDownloads/PIP >/dev/null 2>&1 ;
-! [ -d $HOME/PKGDownloads/GitHub ] && mkdir $HOME/PKGDownloads/GitHub >/dev/null 2>&1 ;
-! [ -d $HOME/PKGDownloads/GitLab ] && mkdir $HOME/PKGDownloads/GitLab >/dev/null 2>&1 ;
-! [ -d $HOME/PKGDownloads/Snaps ] && mkdir $HOME/PKGDownloads/Snaps >/dev/null 2>&1 ;
-! [ -d $HOME/PKGDownloads/MyGitRepos ] && mkdir $HOME/PKGDownloads/MyGitRepos ;
+! [ -d $HOME/PKGDownloads/NPM ] && mkdir $HOME/PKGDownloads/NPM >/dev/null 2>&1
 
-pkgd="$HOME/PKGDownloads"        ;  labd="$HOME/PKGDownloads/GitLab"     
+! [ -d $HOME/PKGDownloads/PIP ] && mkdir $HOME/PKGDownloads/PIP >/dev/null 2>&1
+
+! [ -d $HOME/PKGDownloads/GitHub ] && mkdir $HOME/PKGDownloads/GitHub >/dev/null 2>&1
+
+! [ -d $HOME/PKGDownloads/GitLab ] && mkdir $HOME/PKGDownloads/GitLab >/dev/null 2>&1
+
+! [ -d $HOME/PKGDownloads/Snaps ] && mkdir $HOME/PKGDownloads/Snaps >/dev/null 2>&1
+
+! [ -d $HOME/PKGDownloads/MyGitRepos ] && mkdir $HOME/PKGDownloads/MyGitRepos
+
+
+pkgd="$HOME/PKGDownloads"        ;  labd="$HOME/PKGDownloads/GitLab"      ;  npmd="$HOME/PKGDownloads/NPM"    
+
 pipd="$HOME/PKGDownloads/PIP"    ;  hubd="$HOME/PKGDownloads/GitHub"          
+
 snpd="$HOME/PKGDownloads/Snaps"  ;  gitd="$HOME/PKGDownloads/MyGitRepos"   
-npmd="$HOME/PKGDownloads/NPM"    ;
+
+
 
 [ -f /tmp/total.tmp ] && rm /tmp/total.tmp
 
 for x in  "${packages[@]}" ; do  
-    echo $x >> /tmp/total.tmp ; sed -i '/^\s/d;/^#/d' /tmp/total.tmp ; 
+  echo $x >> /tmp/total.tmp 
+  sed -i '/^\s/d;/^#/d' /tmp/total.tmp 
 done
 
 for d in "/tmp/total.tmp" ; do  
-    src="$(cat $d|cut -d',' -f3 -s)" 
-    pkg="$(cat $d |cut -d',' -f1)"   
-    desc="$(cat $d|cut -d',' -f2)"   
+  src="$(cat $d|cut -d',' -f3 -s)" 
+  pkg="$(cat $d |cut -d',' -f1)"   
+  desc="$(cat $d|cut -d',' -f2)"   
 
 done ; scrstart
 
 while IFS=, read -r pkg desc src; do
-    ((n=$n+1));total=$(wc -l < /tmp/total.tmp) ; 
-    $color1 "( $n of $total ) " ; $color2 $pkg && 
-    [ -n "$(echo "$desc")" ] && green " - " && 
-    $color3 "$desc" ; echo ""
+  ((n=$n+1));total=$(wc -l < /tmp/total.tmp) ; 
+  $color1 "( $n of $total ) " ; $color2 $pkg && 
+  [ -n "$(echo "$desc")" ] && green " - " && 
+  $color3 "$desc" ; echo ""
     
 case "$src" in
     "L") labclone "$pkg" ;; "ML") mylabclone "$pkg" ;; "S") snpinstall "$pkg" ;; "N") npminstall "$pkg" ;;
     "H") hubclone "$pkg" ;; "MH") myhubclone "$pkg" ;;  "") pkginstall "$pkg" ;; "P") pipinstall "$pkg" ;; 
-      *) echo -e "\n" && err ""$src" is  not a valid option for a source. - skipping: "$src" ..." &&  echo -e "\n"
+    *) echo -e "\n" && 
+       err ""$src" is  not a valid option for a source. - skipping: "$src" ..." &&
+       echo -e "\n" ; sleep 2 ;; esac ; done < /tmp/total.tmp
 
-    sleep 2 ;; esac ; done < /tmp/total.tmp
-
-msg "\n\n\n[+] All Packages Suckessfully Downloaded and installed!\n" && sleep 1 ; exit 0 || exit 1
+msg "\n\n\n[+] All Packages Suckessfully Downloaded and installed!\n" && sleep 1 && exit 0 || exit 1
 
 ##############################################################################################################################
 ##############################################################################################################################
