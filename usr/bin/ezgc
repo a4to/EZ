@@ -8,7 +8,8 @@
 
 
 msg(){ echo "$(tput bold; tput setaf 2)[+] ${*}$(tput sgr0)"; }
-err(){ echo >&2 "$(tput bold; tput setaf 1)[-] ERROR!$(tput sgr0)" && exit 1337; }
+errUnknown(){ echo >&2 "$(tput bold; tput setaf 1)[-] ERROR!$(tput sgr0)" && exit 1337; }
+err(){ echo >&2 "$(tput bold; tput setaf 1)[-] ERROR: ${*}$(tput sgr0)" && exit 1337; }
 yellow(){ echo -en "$(tput bold; tput setaf 3)${*}$(tput sgr0)"; }
 blue(){ echo -en "$(tput bold; tput setaf 6)${*}$(tput sgr0)"; }
 green(){ echo -en "$(tput bold; tput setaf 2)${*}$(tput sgr0)"; }
@@ -18,29 +19,32 @@ red(){ echo -e "$(tput bold; tput setaf 1)${*}$(tput sgr0)"; }
 gca(){ \
 [ -z $1 ] && read -p "  Enter repo name :  " repo || repo=$1
 echo -e "\n" && git clone https://aur.archlinux.org/"$1".git &&
-echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || errUnknown ; }
 
 gch(){ \
 [ -z $1 ] && read -p "  Enter 'creator/repo' names :  " repo || repo=$1
 echo -e "\n" && git clone https://github.com/"$repo".git && 
-echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || errUnknown ; }
 
 gcl(){ \
 [ -z $1 ] && read -p "  Enter 'creator/repo' names :  " repo || repo=$1
 echo -e "\n" && git clone https://gitlab.com/"$repo".git &&
-echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || errUnknown ; }
 
 gcp(){ \
 [ -z $1 ] && read -p "  Enter nepo name :  " repo || repo=$1
-echo -e "\n" && git clone https://"$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc/personalCloneUrl")"/"$repo".git &&  
-echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || err ; }
+echo -e "\n" && git clone git@"$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc/personalCloneUrl")"/"$repo" ||
+  git clone https://"$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc/personalCloneUrl")"/"$repo" ||
+  git clone http://"$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc/personalCloneUrl")"/"$repo" &&
+  echo -e "\n\n" && msg " Success!" ; sleep 1 && exit 0 || 
+  err "Could not clone repo, please make sure your personal clone URL is correct, or reset it with the '--default' flag." ; }
 
 firstPersonal(){ \
    blue "     Please enter the" ; yellow " full URL"; blue " to your personal git account";yellow " ("; green "NOTE:"; blue " this setting can be"; pink " changed"; blue " later with the"; pink " '" ; yellow "--default"; pink "'";blue " option."; yellow ") \n\n"; green "     :  " ; read  personal ;
      mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc" >/dev/null 2>&1 ; echo $personal|sed 's/http:\/\///g;s/https:\/\///g;s/.git//g' >"${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc/personalCloneUrl"; }
 
 
-  usage(){ clear ; echo "" ; green "  Usage:" ; pink " "$(basename $0)" " ;yellow "[option] [creator name]";blue "/"; yellow "[repo name] [destination";blue "(optional)";yellow "]";blue "\n
+usage(){ clear ; echo "" ; green "  Usage:" ; pink " "$(basename $0)" " ;yellow "[option] [creator name]";blue "/"; yellow "[repo name] [destination";blue "(optional)";yellow "]";blue "\n
   If"; yellow " [option]";blue " is left blank, the script will assume you are writing out the full link, excluding the head 'https://', and tail '.git'.\n" ; 
    green  "\n\n  Options";blue "/"; green "Flags:\n\n";
    pink "               ";yellow ": ";blue "dry run, prints help menu if no arguments are given.\n" ;
@@ -53,6 +57,10 @@ firstPersonal(){ \
    pink "    --default  ";yellow ": ";blue "reset your default personal git profile URL.\n" ;
 echo -e "\n" ; exit 0 ; }
 
+
+
+# Script Start:
+
 clear ; echo -e "\n"  
 dryRun=$(mktemp -qu)
 
@@ -64,5 +72,8 @@ case $1 in
   -p|p) ! [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/EZ/ezgc/personalCloneUrl" ] && firstPersonal ; gcp $2 ;;
   --default) firstPersonal ;;
   --help|-help|help|--help) usage ;;
-  *) [ -z "$1" ] && usage ||echo "$1"|sed 's/http:\/\///g;s/https:\/\///g;//g'>$dryRun && git clone https://"$(cat $dryRun)" || git clone http://"$(cat $dryRun)".git ;;
+  *) [ -z "$1" ] && usage ||echo "$1"|sed 's/http:\/\///g;s/https:\/\///g;//g'>$dryRun && git clone https://"$(cat $dryRun)" || git clone https://"$(cat $dryRun)".git ;;
 esac
+
+#######################################################################################################################################################################################
+#######################################################################################################################################################################################
