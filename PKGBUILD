@@ -2,11 +2,11 @@
 # ---
 _pkgname=EZ
 pkgname=ez
-pkgver=1.0.r1
+pkgver=1.0.2
 pkgrel=1
 pkgdesc='Task simplificaltion scripts for increasing the speed and efficiency of common tasks'
 arch=(x86_64)
-url="https://gitlab.com/qYp/${_pkgname}"
+url="https://gitlab.com/a4to/${_pkgname}"
 license=('MIT')
 depends=()
 optdepends=(
