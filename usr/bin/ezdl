@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 #######################################################################################################################################################################################
-#                                                                     ~   E A S Y  P A C K A G E  D O W N L O A D   ~                                                                 #
+#                                                                     ~   E Z  D O W N L O A D  H E L P E R   ~                                                                       #
 #######################################################################################################################################################################################
 
+TITLE=" ~ EZ Download Helper ~ "
 
 multiDownlist=$(mktemp -uq)
+
 trap 'sudo rm -f $multiDownlist /tmp/total.tmp >/dev/null 2>&1' EXIT INT TERM HUP QUIT  >/dev/null 2>&1
 
-cat <<EOF >$multiDownlist
+cat <<-EOF > $multiDownlist
 ################################################################################################################################
-#                                       ~   E Z  P A C K A G E  D O W N L O A D E R   ~                                        #
+#                                          ~   E Z  D O W N L O A D  H E L P E R   ~                                           #
 ################################################################################################################################
                                                                                                                              
 ##  PLEASE ENTER YOUR DESIRED SOURCES AND PACKAGES BELOW :
@@ -33,7 +35,7 @@ labname=""
 
 
 ## Optionally, you can change the color scheme to your prefrence below.
-# Your options are as follows: -->  ( blue, green, red, yellow, white, pink or random )               
+# Your options are as follows:  ( blue, green, red, yellow, white, pink or random )               
 
 color1="blue"
 color2="pink"
@@ -46,21 +48,15 @@ color3="yellow"
 ################################################################################################################################
 EOF
 
-[ -n  $EDITOR ] && return 0 || [ -z $EDITOR ] &&
-! sudo pacman -Qq neovim &>/dev/null && sudo pacman -S neovim ; 
-sudo pacman -Qq neovim &>/dev/null && EDITOR=nvim || EDITOR=nano
-
-
-$EDITOR $multiDownlist && source $multiDownlist
 
 name="$(echo "$USER")"
 
 
-[ -n $(echo $color1) ] || [ ! $color1 ] && color=blue
+[ -n $(echo $color1) ] || [ ! $color1 ] && color1=blue
 
-[ -n $(echo $color2) ] || [ ! $color2 ] && color=pink
+[ -n $(echo $color2) ] || [ ! $color2 ] && color2=pink
 
-[ -n $(echo $color3) ] || [ ! $color3 ] && color=yellow
+[ -n $(echo $color3) ] || [ ! $color3 ] && color3=yellow
 
 
 yellow(){ echo -n  "$(tput bold; tput setaf 3)${*}$(tput sgr0)" ; }
@@ -71,7 +67,7 @@ white() { echo -n  "$(tput bold; tput setaf 7)${*}$(tput sgr0)" ; }
 
 pink()  { echo -n  "$(tput bold; tput setaf 5)${*}$(tput sgr0)" ; }
 
-red()   { echo -en  "$(tput bold; tput setaf 1)${*}$(tput sgr0)" ; }
+red()   { echo -en "$(tput bold; tput setaf 1)${*}$(tput sgr0)" ; }
 
 green() { echo -n  "$(tput bold; tput setaf 2)${*}$(tput sgr0)" ; }
 
@@ -79,19 +75,19 @@ msg()   { echo -e  "$(tput bold; tput setaf 2)${*}$(tput sgr0)" ; }
 
 random(){ echo -n  "$(tput bold; tput setaf "$(seq 25|shuf|head -1)") ${*}$(tput sgr0)" ; }
 
-err()   { echo >&2 "$(tput bold; tput setaf 1)[-] ERROR: ${*}$(tput sgr0)" && exit 1337 ; }
+err()   { clear ; echo -e "\n$(tput bold; tput setaf 1)[-] ERROR: ${*}$(tput sgr0)" && exit 1337 ; }
 
 
-npminstall() { sudo -u "$name" npm install --save "$1" "$npmd"/"$pkg" >/dev/null 2>&1 || 
+npminstall() { sudo -u "$name" npm install -g "$1" "$npmd"/"$pkg" >/dev/null 2>&1 || 
   red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-scrstart()   { clear ; echo -e "\n\n" ; green "    Downloading Packages : " ; echo  -e "\n\n" || 
+scrstart()   { clear ; echo -e "\n\n" ; green "   Downloading Packages : " ; echo  -e "\n\n" || 
   red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-snpinstall() { sudo -u "$name" snap install "$1" "$snpd"/"$pkg" >/dev/null 2>&1 || 
+snpinstall() { sudo -u "$name" snap install "$1" >/dev/null 2>&1 || 
   red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
-pkginstall() { paru -S --needed --noconfirm "$1" >/dev/null 2>&1 || 
+pkginstall() { ${helper} -S --needed --noconfirm "$1" >/dev/null 2>&1 || 
   red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
 pipinstall() { sudo -u "$name" python3 -m pip install "$1" "$pipd"/"$pkg" >/dev/null 2>&1 || 
@@ -99,7 +95,7 @@ pipinstall() { sudo -u "$name" python3 -m pip install "$1" "$pipd"/"$pkg" >/dev/
 
 
 labclone()   { git clone https://gitlab.com/"$1".git \
-    "$labd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+    "$gitd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
 mylabclone() { git clone https://gitlab.com/"$labname"/"$(basename $1)".git \
     "$gitd"/"$(basename $pkg)" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
@@ -108,60 +104,183 @@ myhubclone() { git clone https://github.com/"$hubname"/"$(basename $1)".git \
     "$gitd"/"$(basename $pkg)" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
 hubclone()   { git clone https://github.com/"$1".git \
-    "$hubd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
+    "$gitd"/"$pkg" >/dev/null 2>&1 || red "\n [-] Error! Could Not Find '"$1"'\n\n" ; }
 
 
-! [ -d $HOME/PKGDownloads ] && mkdir $HOME/PKGDownloads >/dev/null 2>&1
+testLocal(){ \
+  sudo pacman -Qi ${1} |grep "^Install Date.*" >/dev/null 2>&1 && return 0 || dialog \
+    --title "$TITLE" \
+    --yes-label 'Yes, Install It.' \
+    --no-label 'No Nevermind.' \
+    --yesno "\\n${1} cannot be found locally on the system, would you like to install it now?" 6 90 || exit 1
+  
+  dialog \
+    --title "$TITLE" \
+    --infobox "\\nInstalling ${1} ..." 6 35
+    
+  sudo pacman -S --noconfirm ${1} >/dev/null 2>&1 && return 0
 
-! [ -d $HOME/PKGDownloads/NPM ] && mkdir $HOME/PKGDownloads/NPM >/dev/null 2>&1
-
-! [ -d $HOME/PKGDownloads/PIP ] && mkdir $HOME/PKGDownloads/PIP >/dev/null 2>&1
-
-! [ -d $HOME/PKGDownloads/GitHub ] && mkdir $HOME/PKGDownloads/GitHub >/dev/null 2>&1
-
-! [ -d $HOME/PKGDownloads/GitLab ] && mkdir $HOME/PKGDownloads/GitLab >/dev/null 2>&1
-
-! [ -d $HOME/PKGDownloads/Snaps ] && mkdir $HOME/PKGDownloads/Snaps >/dev/null 2>&1
-
-! [ -d $HOME/PKGDownloads/MyGitRepos ] && mkdir $HOME/PKGDownloads/MyGitRepos
+  ${helper} -S --noconfirm ${1} >/dev/null 2>&1 && return 0 || 
+    err "${1} could not be installed. Please install it manually." ; }
 
 
-pkgd="$HOME/PKGDownloads"        ;  labd="$HOME/PKGDownloads/GitLab"      ;  npmd="$HOME/PKGDownloads/NPM"    
+getEditor(){
 
-pipd="$HOME/PKGDownloads/PIP"    ;  hubd="$HOME/PKGDownloads/GitHub"          
+editorSel=(
+  '1' 'Neovim'
+  '2' 'Vim'
+  '3' 'Nano'
+  '4' 'Emacs'
+  '5' 'VS Code'
+  '6' 'Atom'
+  '7' 'Leafpad'
+  '8' 'Notepadqq'
+  '9' 'Gedit'
+  '10' 'Enter Manually'
+)
 
-snpd="$HOME/PKGDownloads/Snaps"  ;  gitd="$HOME/PKGDownloads/MyGitRepos"   
+editorChoice=$(dialog \
+  --stdout \
+  --title "$TITLE " \
+  --menu "\\n                Please select your preferred text editor:\\n\\n\\nNOTE: This will only be asked once, after which, can be changed by editing the config file located at '${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config'\\n\\nFor convenience, a terminal based editor is recommended.\\n " 16 80 0 \
+  "${editorSel[@]}")
 
+[ -z $editorChoice ] && err "No editor selected ..."
+
+case $editorChoice in
+  1) export editor="nvim" ; export editorName="neovim" ;;
+  2) export editor="vim" ; export editorName="vim" ;;
+  3) export editor="nano" ; export editorName="nano" ;;
+  4) export editor="emacs" ; export editorName="emacs" ;;
+  5) export editor="code" ; export editorName="code" ;;
+  6) export editor="atom" ; export editorName="atom" ;;
+  7) export editor="leafpad" ; export editorName="leafpad" ;;
+  8) export editor="notepadqq" ; export editorName="notepadqq" ;;
+  9) export editor="gedit" ; export editorName="gedit" ;;
+  10) export editor=$(dialog --stdout --title "$TITLE " \
+    --inputbox "Please enter the full name of your preferred text editor:" 10 65)
+      export editorName=${editor} ;;
+esac
+
+testLocal ${editorName}
+
+! cat ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config >/dev/null 2>&1 | grep -q "editor" &&
+  echo -e "# ~ EZ Config File ~ #\n\neditor=\"${editor}\"" >> ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config || 
+  sed -i "s/editor=.*/editor=\"${editor}\"/" ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config ; }
+
+
+getHelper(){
+
+helperSel=(
+  '1' 'Yay'
+  '2' 'Paru'
+  '3' 'Pikaur'
+)
+
+helperChoice=$(dialog \
+  --stdout \
+  --title "$TITLE " \
+  --menu "\\n                Please select your preferred AUR helper:\\n\\n\\nNOTE: This will only be asked once, after which, can be changed by editing the config file located at '${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config'\\n " 14 80 0 \
+  "${helperSel[@]}")
+
+[ -z $helperChoice ] && err "No editor selected ..."
+
+case $helperChoice in
+  1) helperName=yay ; for help in yay yay-bin yay-git; do sudo pacman -Qq $help >/dev/null 2>&1 && export helper=yay && break ; done ;;
+  2) helperName=paru ; for help in paru paru-bin paru-git; do sudo pacman -Qq $help >/dev/null 2>&1 && export helper=paru && break ; done ;;
+  3) helperName=pikaur ; for help in pikaur pikaur-bin pikaur-git; do sudo pacman -Qq $help >/dev/null 2>&1 && export helper=pikaur && break ; done ;;
+esac
+
+[ -z $helper ] && dialog \
+  --title "$TITLE" \
+  --yes-label 'Yes, Install It.' \
+  --no-label 'No Nevermind.' \
+  --yesno "\\nThe selected AUR helper was not found on your system, would you like to install it now?" 6 95
+
+fetchHelper=$?
+  
+[ $fetchHelper = 0 ] && dialog \
+  --title "$TITLE" \
+  --infobox "\\nInstalling ${helperName} ..." 6 35 && eval $(\
+  sudo pacman -S --noconfirm --needed git >/dev/null 2>&1 
+[ "$(id -u)" -eq 0 ] && err "Please run this script as a normal user, not with elevated privileges (sudo)."
+git clone https://aur.archlinux.org/${helperName}.git /tmp/${helperName}.$$ >/dev/null 2>&1 
+
+cd /tmp/${helperName}.$$ &&  
+  makepkg -sri --noconfirm >/dev/null 2>&1 && cd ~/ && 
+  sudo rm -rf /tmp/${helperName}.$$ >/dev/null 2>&1 ||
+  err "Could not install ${helperName}. Please install it manually.")
+
+! cat ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config >/dev/null 2>&1 | grep -q "helper" &&
+  echo -e "helper=\"${helperName}\"" >> ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config || 
+  sed -i "s/helper=.*/helper=\"${helperName}\"/" ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config ; }
+
+
+
+# Script Start:
+
+
+! [ -d ${XDG_DATA_HOME:-$HOME/.local/share}/EZ ] && mkdir -p ${XDG_DATA_HOME:-$HOME/.local/share}/EZ
+
+
+source ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config
+
+[ -z ${editor} ] && getEditor
+
+[ -z ${helper} ] && getHelper
+
+source ${XDG_DATA_HOME:-$HOME/.local/share}/EZ/config
+
+
+$editor $multiDownlist && source $multiDownlist ; [ -z $packages ] && err "No packages specified ..."
+
+
+gitd="$HOME/EZClones"  ; ! [ -d $gitd ] && mkdir $gitd >/dev/null 2>&1
 
 
 [ -f /tmp/total.tmp ] && rm /tmp/total.tmp
 
 for x in  "${packages[@]}" ; do  
+
   echo $x >> /tmp/total.tmp 
+  
   sed -i '/^\s/d;/^#/d' /tmp/total.tmp 
+
 done
 
+
 for d in "/tmp/total.tmp" ; do  
+
   src="$(cat $d|cut -d',' -f3 -s)" 
+  
   pkg="$(cat $d |cut -d',' -f1)"   
+  
   desc="$(cat $d|cut -d',' -f2)"   
 
 done ; scrstart
 
-while IFS=, read -r pkg desc src; do
-  ((n=$n+1));total=$(wc -l < /tmp/total.tmp) ; 
-  $color1 "( $n of $total ) " ; $color2 $pkg && 
-  [ -n "$(echo "$desc")" ] && green " - " && 
-  $color3 "$desc" ; echo ""
-    
-case "$src" in
-    "L") labclone "$pkg" ;; "ML") mylabclone "$pkg" ;; "S") snpinstall "$pkg" ;; "N") npminstall "$pkg" ;;
-    "H") hubclone "$pkg" ;; "MH") myhubclone "$pkg" ;;  "") pkginstall "$pkg" ;; "P") pipinstall "$pkg" ;; 
-    *) echo -e "\n" && 
-       err ""$src" is  not a valid option for a source. - skipping: "$src" ..." &&
-       echo -e "\n" ; sleep 2 ;; esac ; done < /tmp/total.tmp
 
-msg "\n\n\n[+] All Packages Suckessfully Downloaded and installed!\n" && sleep 1 && exit 0 || exit 1
+while IFS=, read -r pkg desc src; do
+  
+  ((n=$n+1));total=$(wc -l < /tmp/total.tmp) ; 
+  
+  $color1 "( $n of $total ) " 
+
+  $color2 $pkg &&  [ -n "$(echo "$desc")" ] && green " - " && $color3 "$desc" ; echo ""
+    
+
+case "$src" in
+    
+  "L") labclone "$pkg" ;; "ML") mylabclone "$pkg" ;; "S") snpinstall "$pkg" ;; "N") npminstall "$pkg" ;;
+  
+  "H") hubclone "$pkg" ;; "MH") myhubclone "$pkg" ;;  "") pkginstall "$pkg" ;; "P") pipinstall "$pkg" ;; 
+    
+  *) echo -e "\n" &&  err ""$src" is  not a valid option for a source. - skipping: "$src" ..."
+    
+     echo -e "\n" ; sleep 2 ;; esac ; done < /tmp/total.tmp
+
+msg "\n\n\n[+] Download Complete.\n" && sleep 1 && exit 0 || exit 1
+
 
 ##############################################################################################################################
 ##############################################################################################################################

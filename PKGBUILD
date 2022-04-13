@@ -2,7 +2,7 @@
 # ---
 _pkgname=EZ
 pkgname=ez
-pkgver=1.0.2
+pkgver=1.0.3
 pkgrel=1
 pkgdesc='Task simplificaltion scripts for increasing the speed and efficiency of common tasks'
 arch=(x86_64)
